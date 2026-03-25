@@ -13,12 +13,12 @@ SNPforge is a configurable R pipeline for SNP-based association testing. It is d
 
 The main pipeline script is:
 
-- `/path/to/scripts/run_snpforge.R`
+- [`scripts/run_snpforge.R`](scripts/run_snpforge.R)
 
 Example configs are included at:
 
-- `/path/to/config/example_main_effects_config.yaml`
-- `/path/to/config/example_interaction_config.yaml`
+- [`config/example_main_effects_config.yaml`](config/example_main_effects_config.yaml)
+- [`config/example_interaction_config.yaml`](config/example_interaction_config.yaml)
 
 ## What the pipeline produces
 
@@ -245,10 +245,10 @@ If all relevant inputs are `final_id`, the mapping file and related mapping para
 
 Two portable example configs are included:
 
-- `config/example_main_effects_config.yaml`
+- [`config/example_main_effects_config.yaml`](config/example_main_effects_config.yaml)
   A main-effects-only example where PCs are assumed to already exist in the phenotype table.
 
-- `config/example_interaction_config.yaml`
+- [`config/example_interaction_config.yaml`](config/example_interaction_config.yaml)
   An interaction-model example using a separate mapping file and PC file.
 
 ## Running the pipeline
@@ -256,21 +256,21 @@ Two portable example configs are included:
 ### From the command line
 
 ```bash
-Rscript /path/to/scripts/run_snpforge.R /path/to/config/example_interaction_config.yaml
+Rscript scripts/run_snpforge.R config/example_interaction_config.yaml
 ```
 
 or:
 
 ```bash
-Rscript /path/to/scripts/run_snpforge.R /path/to/config/example_main_effects_config.yaml
+Rscript scripts/run_snpforge.R config/example_main_effects_config.yaml
 ```
 
 ### From an interactive R session
 
 ```r
-source("/path/to/scripts/run_snpforge.R")
+source("scripts/run_snpforge.R")
 
-config <- read_config("/path/to/config/example_interaction_config.yaml")
+config <- read_config("config/example_interaction_config.yaml")
 results <- run_pipeline(config)
 ```
 
