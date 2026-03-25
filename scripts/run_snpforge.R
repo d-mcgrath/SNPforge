@@ -1328,12 +1328,14 @@ annotate_model_terms <- function(tidy_tbl,
     TRUE ~ "coefficient"
   )
 
+  has_se <- "std.error" %in% names(tidy_tbl)
+
   if (!"conf.low" %in% names(tidy_tbl)) {
-    tidy_tbl$conf.low <- NA_real_
+    tidy_tbl$conf.low <- if (has_se) tidy_tbl$estimate - 1.96 * tidy_tbl$std.error else NA_real_
   }
 
   if (!"conf.high" %in% names(tidy_tbl)) {
-    tidy_tbl$conf.high <- NA_real_
+    tidy_tbl$conf.high <- if (has_se) tidy_tbl$estimate + 1.96 * tidy_tbl$std.error else NA_real_
   }
 
   tidy_tbl |>
@@ -1418,7 +1420,7 @@ run_model_scan <- function(data,
         ~ if (is.null(..1)) {
           NULL
         } else {
-          tidy_tbl <- broom::tidy(..1, conf.int = TRUE)
+          tidy_tbl <- broom::tidy(..1)
           annotate_model_terms(
             tidy_tbl = tidy_tbl,
             model = ..1,
