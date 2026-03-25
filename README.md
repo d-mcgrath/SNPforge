@@ -1,8 +1,8 @@
-<p align="center">
-  <img src="SNPforge_logo.png" alt="SNPforge logo" width="320">
-</p>
-
 # SNPforge
+
+<p align="center">
+  <img src="misc/SNPforge_logo.png" alt="SNPforge logo" width="100%">
+</p>
 
 ## Overview
 
