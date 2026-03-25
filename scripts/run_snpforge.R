@@ -1259,12 +1259,98 @@ empty_model_terms_tbl <- function() {
   tibble(
     outcome = character(),
     snp = character(),
+    family = character(),
     term = character(),
     estimate = numeric(),
     std.error = numeric(),
     statistic = numeric(),
-    p.value = numeric()
+    p.value = numeric(),
+    conf.low = numeric(),
+    conf.high = numeric(),
+    n_complete = integer(),
+    effect_scale = character(),
+    direction = character(),
+    reference_level = character(),
+    odds_ratio = numeric(),
+    or_conf.low = numeric(),
+    or_conf.high = numeric()
   )
+}
+
+extract_reference_level <- function(term, xlevels) {
+  if (is.null(xlevels) || length(xlevels) == 0 || is.na(term) || !nzchar(term)) {
+    return(NA_character_)
+  }
+
+  if (term == "(Intercept)" || str_detect(term, "\\|")) {
+    return(NA_character_)
+  }
+
+  term_parts <- str_split(term, ":", simplify = FALSE)[[1]] |>
+    str_replace_all("`", "")
+
+  refs <- purrr::map_chr(names(xlevels), function(var) {
+    matched <- any(term_parts != var & startsWith(term_parts, var))
+    if (!matched) {
+      return(NA_character_)
+    }
+
+    ref_level <- xlevels[[var]][1]
+    if (is.null(ref_level) || is.na(ref_level) || !nzchar(ref_level)) {
+      return(NA_character_)
+    }
+
+    paste0(var, "=", ref_level)
+  })
+
+  refs <- refs[!is.na(refs) & nzchar(refs)]
+
+  if (length(refs) == 0) {
+    return(NA_character_)
+  }
+
+  paste(refs, collapse = "; ")
+}
+
+annotate_model_terms <- function(tidy_tbl,
+                                 model,
+                                 family,
+                                 n_complete) {
+  if (is.null(tidy_tbl) || nrow(tidy_tbl) == 0) {
+    return(empty_model_terms_tbl())
+  }
+
+  xlevels <- model$xlevels %||% list()
+  effect_scale <- case_when(
+    family == "gaussian" ~ "coefficient",
+    family == "binomial" ~ "log_odds",
+    family == "ordinal" ~ "proportional_odds_logit",
+    TRUE ~ "coefficient"
+  )
+
+  if (!"conf.low" %in% names(tidy_tbl)) {
+    tidy_tbl$conf.low <- NA_real_
+  }
+
+  if (!"conf.high" %in% names(tidy_tbl)) {
+    tidy_tbl$conf.high <- NA_real_
+  }
+
+  tidy_tbl |>
+    mutate(
+      n_complete = as.integer(n_complete),
+      effect_scale = effect_scale,
+      direction = case_when(
+        is.na(estimate) ~ NA_character_,
+        estimate > 0 ~ "positive",
+        estimate < 0 ~ "negative",
+        TRUE ~ "neutral"
+      ),
+      reference_level = purrr::map_chr(term, ~ extract_reference_level(.x, xlevels)),
+      odds_ratio = if_else(family %in% c("binomial", "ordinal") & !str_detect(term, "\\|"), exp(estimate), NA_real_),
+      or_conf.low = if_else(family %in% c("binomial", "ordinal") & !str_detect(term, "\\|") & !is.na(conf.low), exp(conf.low), NA_real_),
+      or_conf.high = if_else(family %in% c("binomial", "ordinal") & !str_detect(term, "\\|") & !is.na(conf.high), exp(conf.high), NA_real_)
+    )
 }
 
 run_model_scan <- function(data,
@@ -1308,6 +1394,11 @@ run_model_scan <- function(data,
   }
 
   model_terms <- runnable |>
+    left_join(
+      diagnostics |>
+        select(outcome, snp, n_complete),
+      by = c("outcome", "snp")
+    ) |>
     mutate(
       fit = pmap(
         list(outcome, snp, family),
@@ -1322,7 +1413,20 @@ run_model_scan <- function(data,
       ),
       model = map(fit, "model"),
       fit_error = map_chr(fit, "fit_error"),
-      tidy = map(model, ~ if (is.null(.x)) NULL else broom::tidy(.x))
+      tidy = pmap(
+        list(model, n_complete, family),
+        ~ if (is.null(..1)) {
+          NULL
+        } else {
+          tidy_tbl <- broom::tidy(..1, conf.int = TRUE)
+          annotate_model_terms(
+            tidy_tbl = tidy_tbl,
+            model = ..1,
+            family = ..3,
+            n_complete = ..2
+          )
+        }
+      )
     ) |>
     select(outcome, snp, family, fit_error, tidy)
 
@@ -1348,7 +1452,7 @@ run_model_scan <- function(data,
 
   model_terms <- model_terms |>
     filter(!map_lgl(tidy, is.null)) |>
-    select(outcome, snp, tidy) |>
+    select(outcome, snp, family, tidy) |>
     unnest(tidy)
 
   list(

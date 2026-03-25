@@ -72,6 +72,19 @@ Key model output files:
 - `all_model_terms.tsv.gz`: all coefficients from all successfully fit models
 - `interaction_results.tsv.gz`: only true SNP-by-interaction terms when an interaction is configured
 
+These model-result tables include coefficient interpretation columns such as:
+
+- `estimate`
+- `conf.low`
+- `conf.high`
+- `direction`
+- `effect_scale`
+- `reference_level`
+- `odds_ratio`
+- `or_conf.low`
+- `or_conf.high`
+- `n_complete`
+
 `logs/model_diagnostics.tsv` records model-screening and fit information for every outcome/SNP combination, including:
 
 - `status`
