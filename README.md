@@ -19,7 +19,7 @@ Example configs are included at:
 
 - [`config/example_main_effects_config.yaml`](config/example_main_effects_config.yaml)
 - [`config/example_interaction_config.yaml`](config/example_interaction_config.yaml)
-- [`config/example_id_mapping.csv`](config/example_id_mapping.csv)
+- [`mapping_file/example_id_mapping.csv`](mapping_file/example_id_mapping.csv)
 
 ## What the pipeline produces
 

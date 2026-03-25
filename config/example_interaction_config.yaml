@@ -11,7 +11,7 @@ pheno_file: "/path/to/phenotype_table.tsv.gz"
 pheno_format: "tsv"
 pheno_id_col: "subject_id"
 
-mapping_file: "config/example_id_mapping.csv"
+mapping_file: "mapping_file/example_id_mapping.csv"
 mapping_file_format: "csv"
 mapping_id_from: "raw_subject_id"
 mapping_id_to: "analysis_id"
