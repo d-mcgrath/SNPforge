@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="SNPforge_logo.png" alt="SNPforge logo" width="320">
+</p>
+
 # SNPforge
 
 ## Overview
