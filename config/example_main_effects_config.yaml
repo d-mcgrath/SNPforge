@@ -1,0 +1,44 @@
+variant_file: "/path/to/variant_list.tsv"
+variant_file_format: "tsv"
+variant_col: "variant"
+strip_chr_for_vcf: true
+strip_chr_for_file_template: false
+
+subjects_file: "/path/to/subject_subset.txt"
+genotype_file_template: "/path/to/genotypes/chr{chromosome}.vcf.gz"
+
+pheno_file: "/path/to/analysis_metadata.tsv.gz"
+pheno_format: "tsv"
+pheno_id_col: "analysis_id"
+
+use_pc_file: false
+
+genotype_id_type: "final_id"
+pheno_id_type: "final_id"
+
+covariates:
+  - "age"
+  - "sex"
+  - "smoking_pack_years"
+  - "bmi"
+  - "PC1"
+  - "PC2"
+  - "PC3"
+
+factor_cols:
+  - "sex"
+
+outcomes:
+  - name: "fev1"
+    family: "gaussian"
+  - name: "ct_gas_trapping_pct"
+    family: "gaussian"
+  - name: "clinician_diagnosed_emphysema"
+    family: "binomial"
+
+maf_filter: 0.01
+variant_types: "snps"
+force_samples: true
+seed: 111
+
+output_dir: "output/example_main_effects_run"

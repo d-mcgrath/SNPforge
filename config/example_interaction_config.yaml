@@ -1,0 +1,63 @@
+variant_file: "/path/to/variant_catalog.tsv.gz"
+variant_file_format: "tsv"
+variant_col: "variant"
+strip_chr_for_vcf: false
+strip_chr_for_file_template: false
+
+subjects_file: "/path/to/analysis_subjects.txt"
+genotype_file_template: "/path/to/genotypes/chr{chromosome}.bcf"
+
+pheno_file: "/path/to/phenotype_table.tsv.gz"
+pheno_format: "tsv"
+pheno_id_col: "subject_id"
+
+mapping_file: "/path/to/id_mapping.csv"
+mapping_file_format: "csv"
+mapping_id_from: "raw_subject_id"
+mapping_id_to: "analysis_id"
+
+pc_file: "/path/to/genetic_pcs.tsv"
+pc_format: "tsv"
+pc_id_col: "analysis_id"
+
+genotype_id_type: "raw_id"
+pheno_id_type: "raw_id"
+pc_id_type: "final_id"
+
+interaction_col: "age_group"
+
+covariates:
+  - "age"
+  - "sex"
+  - "smoking_pack_years"
+  - "bmi"
+  - "PC1"
+  - "PC2"
+  - "PC3"
+  - "PC4"
+  - "PC5"
+
+factor_cols:
+  - "sex"
+  - "age_group"
+
+outcomes:
+  - name: "fev1_post"
+    family: "gaussian"
+  - name: "fvc_post"
+    family: "gaussian"
+  - name: "fev1_fvc_ratio"
+    family: "gaussian"
+  - name: "ct_emphysema_fraction"
+    family: "gaussian"
+  - name: "self_reported_emphysema"
+    family: "binomial"
+  - name: "visual_emphysema_grade"
+    family: "ordinal"
+
+maf_filter: 0.01
+variant_types: "snps"
+force_samples: true
+seed: 111
+
+output_dir: "output/example_interaction_run"
